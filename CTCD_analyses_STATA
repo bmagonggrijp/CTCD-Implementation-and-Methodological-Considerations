@@ -1,1 +1,127 @@
+*Data Analysis CTCD - STATA
 
+\\ Unrelated Sample Scenario A
+import delimited *choose own directory * unrelated_simulated_data_scenarioA.csv, clear 
+\\ linear regression
+reg y x
+reg y dx
+\\ Logistic regression
+logit dy x
+logit dy dx
+
+* DZ Twin Sample Scenario A
+clear
+clear matrix
+import delimited  *choose own directory * simulated_data_DZ_scenarioA.csv, clear 
+xtset famnr
+\\ fixed effects regression
+xtreg y x, fe
+xtreg y dx, fe
+\\ CLR
+clogit dy x, group(famnr)
+clogit dy dx, group(famnr)
+
+* MZ Twin Sample Scenario A
+clear
+clear matrix
+import delimited  *choose own directory * simulated_data_MZ_scenarioA.csv, clear 
+xtset famnr
+\\ fixed effects regression
+xtreg y x, fe
+xtreg y dx, fe
+\\ CLR
+clogit dy x, group(famnr)
+clogit dy dx, group(famnr)
+
+* Unrelated Sample Scenario B
+clear
+clear matrix
+import delimited  *choose own directory * unrelated_simulated_data_scenarioB.csv, clear 
+\\ linear regression
+reg y x
+reg y dx
+\\ logistic regression
+logit dy x
+logit dy dx
+
+* DZ Twin Sample Scenario B
+clear
+clear matrix
+import delimited  *choose own directory * simulated_data_DZ_scenarioB.csv, clear 
+xtset famnr
+\\ fixed effects regression
+xtreg y x, fe
+xtreg y dx, fe
+\\ CLR
+clogit dy x, group(famnr)
+clogit dy dx, group(famnr)
+
+* MZ Twin Sample Scenario B
+clear
+clear matrix
+import delimited  *choose own directory * simulated_data_MZ_scenarioB.csv, clear 
+xtset famnr
+\\ Fixed effects regression
+xtreg y x, fe
+xtreg y dx, fe
+\\ CLR
+clogit dy x, group(famnr)
+clogit dy dx, group(famnr)
+
+* Unrelated Sample Scenario C
+clear
+clear matrix
+import delimited  *choose own directory * unrelated_simulated_data_scenarioC.csv, clear 
+reg y x
+reg y dx
+logit dy x
+logit dy dx
+
+* DZ Twin Sample Scenario C
+clear
+clear matrix
+import delimited  *choose own directory * simulated_data_DZ_scenarioC.csv, clear 
+xtset famnr
+xtreg y x, fe
+xtreg y dx, fe
+clogit dy x, group(famnr)
+clogit dy dx, group(famnr)
+
+* MZ Twin Sample Scenario C
+clear
+clear matrix  
+import delimited  *choose own directory * simulated_data_MZ_scenarioC.csv, clear 
+xtset famnr
+xtreg y x, fe
+xtreg y dx, fe
+clogit dy x, group(famnr)
+clogit dy dx, group(famnr)
+
+* Unrelated Sample Scenario D
+clear
+clear matrix
+import delimited  *choose own directory * unrelated_simulated_data_scenarioD.csv, clear 
+reg y x
+reg y dx
+logit dy x
+logit dy dx
+
+* DZ Twin Sample Scenario D
+clear
+clear matrix
+import delimited  *choose own directory * simulated_data_DZ_scenarioD.csv, clear 
+xtset famnr
+xtreg y x, fe
+xtreg y dx, fe
+clogit dy x, group(famnr)
+clogit dy dx, group(famnr)
+
+* MZ Twin Sample Scenario D
+clear
+clear matrix
+import delimited  *choose own directory * simulated_data_MZ_scenarioD.csv, clear 
+xtset famnr
+xtreg y x, fe
+xtreg y dx, fe
+clogit dy x, group(famnr)
+clogit dy dx, group(famnr)
