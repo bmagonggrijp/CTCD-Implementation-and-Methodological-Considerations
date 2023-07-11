@@ -1,1 +1,369 @@
+*Data Analysis CTCD - SPSS
+* Encoding: UTF-8.
 
+************************** Unrelated analyses ***********************
+*read in file: unrelated simulated data select scenario A, B, C or D.
+PRESERVE.
+SET DECIMAL DOT.
+GET DATA  /TYPE=TXT
+  /FILE=
+    "*choose own directory *"
+  /ENCODING='UTF8'
+  /DELIMITERS=","
+  /QUALIFIER='"'
+  /ARRANGEMENT=DELIMITED
+  /FIRSTCASE=2
+  /DATATYPEMIN PERCENTAGE=95.0
+  /VARIABLES=
+  x AUTO
+  y AUTO
+  dy AUTO
+  dx AUTO
+  famnr AUTO
+  /MAP.
+RESTORE.
+CACHE.
+EXECUTE.
+
+* linear regression y~x.
+REGRESSION
+  /MISSING LISTWISE
+  /STATISTICS COEFF OUTS CI(95) R ANOVA
+  /CRITERIA=PIN(.05) POUT(.10)
+  /NOORIGIN 
+  /DEPENDENT y
+  /METHOD=ENTER x.
+
+* linear regression y~dx.
+REGRESSION
+  /MISSING LISTWISE
+  /STATISTICS COEFF OUTS CI(95) R ANOVA
+  /CRITERIA=PIN(.05) POUT(.10)
+  /NOORIGIN 
+  /DEPENDENT y
+  /METHOD=ENTER dx.
+
+* Logistic regression dy~x.
+LOGISTIC REGRESSION VARIABLES dy
+  /METHOD=ENTER x 
+  /PRINT=CI(95)
+  /CRITERIA=PIN(0.05) POUT(0.10) ITERATE(20) CUT(0.5).
+
+* Logistic regression dy~dx.
+LOGISTIC REGRESSION VARIABLES dy
+  /METHOD=ENTER dx 
+  /PRINT=CI(95)
+  /CRITERIA=PIN(0.05) POUT(0.10) ITERATE(20) CUT(0.5).
+**** Repeat above for other scenario’s *****
+
+****************** DZ Twin analyses ****************
+* read in file DZ twins scenario A, B, C or D.
+PRESERVE.
+SET DECIMAL DOT.
+GET DATA  /TYPE=TXT
+  /FILE=    "*Choose file from own directory*"
+  /ENCODING='UTF8'
+  /DELIMITERS=","
+  /QUALIFIER='"'
+  /ARRANGEMENT=DELIMITED
+  /FIRSTCASE=2
+  /DATATYPEMIN PERCENTAGE=95.0
+  /VARIABLES=
+  famnr AUTO
+  ppn AUTO
+  x AUTO
+  y AUTO
+  dx AUTO
+  dy AUTO
+  xm AUTO
+  zyg AUTO
+  /MAP.
+RESTORE.
+CACHE.
+EXECUTE.
+
+* Fixed effects regression, y ~x.
+MIXED y WITH x
+  /CRITERIA=DFMETHOD(SATTERTHWAITE) CIN(95) MXITER(100) MXSTEP(10) SCORING(1) 
+    SINGULAR(0.000000000001) HCONVERGE(0.00000001, RELATIVE) LCONVERGE(0, ABSOLUTE) PCONVERGE(0, 
+    ABSOLUTE)
+  /FIXED=x | SSTYPE(3)
+  /METHOD=REML
+  /PRINT=SOLUTION.
+
+* Fixed effects y~dx.
+* note: SPSS DOES NOT select the discordant twins pairs prior to analysis. This needs to be done manually:
+ 
+* Identify Duplicate Cases.
+SORT CASES BY famnr(A) dx(A).
+MATCH FILES
+  /FILE=*
+  /BY famnr dx
+  /FIRST=PrimaryFirst
+  /LAST=PrimaryLast.
+DO IF (PrimaryFirst).
+COMPUTE  MatchSequence=1-PrimaryLast.
+ELSE.
+COMPUTE  MatchSequence=MatchSequence+1.
+END IF.
+LEAVE  MatchSequence.
+FORMATS  MatchSequence (f7).
+MATCH FILES
+  /FILE=*
+  /DROP=PrimaryFirst PrimaryLast.
+VARIABLE LABELS  MatchSequence 'Sequential count of matching cases'.
+VARIABLE LEVEL  MatchSequence (SCALE).
+FREQUENCIES VARIABLES=MatchSequence.
+EXECUTE.
+
+*select only dx discordant twins.
+Select if MatchSequence =0.
+
+* fixed effects analyses y ~dx.
+MIXED y WITH dx
+  /CRITERIA=DFMETHOD(SATTERTHWAITE) CIN(95) MXITER(100) MXSTEP(10) SCORING(1) 
+    SINGULAR(0.000000000001) HCONVERGE(0.00000001, RELATIVE) LCONVERGE(0, ABSOLUTE) PCONVERGE(0, 
+    ABSOLUTE)
+  /FIXED=dx | SSTYPE(3)
+  /METHOD=REML
+  /PRINT=SOLUTION.
+
+* Read original file in file in again.
+    
+PRESERVE.
+SET DECIMAL DOT.
+GET DATA  /TYPE=TXT
+  /FILE=    "*choose from own directory* "
+  /ENCODING='UTF8'
+  /DELIMITERS=","
+  /QUALIFIER='"'
+  /ARRANGEMENT=DELIMITED
+  /FIRSTCASE=2
+  /DATATYPEMIN PERCENTAGE=95.0
+  /VARIABLES=
+  famnr AUTO
+  ppn AUTO
+  x AUTO
+  y AUTO
+  dx AUTO
+  dy AUTO
+  xm AUTO
+  zyg AUTO
+  /MAP.
+RESTORE.
+CACHE.
+EXECUTE.
+
+* CLR dy ~x. For full documentation provided by IBS see: https://www.ibm.com/support/pages/conditional-logistic-regression-using-coxreg
+* SPSS does not automatically select the dy discordant twins - so select twins first.
+
+* Identify Duplicate Cases.
+SORT CASES BY famnr(A) dy(A).
+MATCH FILES
+  /FILE=*
+  /BY famnr dy
+  /FIRST=PrimaryFirst
+  /LAST=PrimaryLast.
+DO IF (PrimaryFirst).
+COMPUTE  MatchSequence=1-PrimaryLast.
+ELSE.
+COMPUTE  MatchSequence=MatchSequence+1.
+END IF.
+LEAVE  MatchSequence.
+FORMATS  MatchSequence (f7).
+MATCH FILES
+  /FILE=*
+  /DROP=PrimaryFirst PrimaryLast.
+VARIABLE LABELS  MatchSequence 'Sequential count of matching cases'.
+VARIABLE LEVEL  MatchSequence (SCALE).
+FREQUENCIES VARIABLES=MatchSequence.
+EXECUTE.
+
+*select discordant dy twins.
+Select if MatchSequence = 0.
+EXECUTE.
+
+*recode the dependent variable so that it has a value of 1 for the cases and 2 for the controls.
+RECODE dy (1=1) (0=2).
+EXECUTE.
+
+* Create a copy of this variable with another name. We'll call this variable STATUS. (Technically, all that's needed here is for all cases to share some property not shared by the controls.).
+RECODE dy (ELSE=Copy) INTO copy_dy.
+EXECUTE.
+
+* CLR dy ~x.
+COXREG dy
+  /STATUS=copy_dy(1)
+  /STRATA=famnr
+  /METHOD=ENTER x 
+  /PRINT=CI(95) CORR
+  /CRITERIA=PIN(.05) POUT(.10) ITERATE(20).
+
+* CLR dy~dx
+ * Note: SPSS does handle the discordant dx (exposure) variable correctly, so here we do not need to select those manually, only for the outcome variable dy.
+
+COXREG dy
+  /STATUS=copy_dy(1)
+  /STRATA=famnr
+  /CONTRAST (dx)=Indicator(1)
+  /METHOD=ENTER dx 
+  /PRINT=CI(95) CORR
+  /CRITERIA=PIN(.05) POUT(.10) ITERATE(20).
+
+***** Repeat above for the other scenario’s ******
+
+****************** MZ Twin analyses ****************
+* read in file MZ twins scenario A, B, C or D.
+PRESERVE.
+SET DECIMAL DOT.
+GET DATA  /TYPE=TXT
+  /FILE=    "*Choose file from own directory*"
+  /ENCODING='UTF8'
+  /DELIMITERS=","
+  /QUALIFIER='"'
+  /ARRANGEMENT=DELIMITED
+  /FIRSTCASE=2
+  /DATATYPEMIN PERCENTAGE=95.0
+  /VARIABLES=
+  famnr AUTO
+  ppn AUTO
+  x AUTO
+  y AUTO
+  dx AUTO
+  dy AUTO
+  xm AUTO
+  zyg AUTO
+  /MAP.
+RESTORE.
+CACHE.
+EXECUTE.
+
+* Fixed effects regression, y ~x.
+MIXED y WITH x
+  /CRITERIA=DFMETHOD(SATTERTHWAITE) CIN(95) MXITER(100) MXSTEP(10) SCORING(1) 
+    SINGULAR(0.000000000001) HCONVERGE(0.00000001, RELATIVE) LCONVERGE(0, ABSOLUTE) PCONVERGE(0, 
+    ABSOLUTE)
+  /FIXED=x | SSTYPE(3)
+  /METHOD=REML
+  /PRINT=SOLUTION.
+
+* Fixed effects y~dx.
+* note: SPSS DOES NOT select the discordant twins pairs prior to analysis. This needs to be done manually:
+ 
+* Identify Duplicate Cases.
+SORT CASES BY famnr(A) dx(A).
+MATCH FILES
+  /FILE=*
+  /BY famnr dx
+  /FIRST=PrimaryFirst
+  /LAST=PrimaryLast.
+DO IF (PrimaryFirst).
+COMPUTE  MatchSequence=1-PrimaryLast.
+ELSE.
+COMPUTE  MatchSequence=MatchSequence+1.
+END IF.
+LEAVE  MatchSequence.
+FORMATS  MatchSequence (f7).
+MATCH FILES
+  /FILE=*
+  /DROP=PrimaryFirst PrimaryLast.
+VARIABLE LABELS  MatchSequence 'Sequential count of matching cases'.
+VARIABLE LEVEL  MatchSequence (SCALE).
+FREQUENCIES VARIABLES=MatchSequence.
+EXECUTE.
+
+*select only dx discordant twins.
+Select if MatchSequence =0.
+
+* fixed effects analyses y ~dx.
+MIXED y WITH dx
+  /CRITERIA=DFMETHOD(SATTERTHWAITE) CIN(95) MXITER(100) MXSTEP(10) SCORING(1) 
+    SINGULAR(0.000000000001) HCONVERGE(0.00000001, RELATIVE) LCONVERGE(0, ABSOLUTE) PCONVERGE(0, 
+    ABSOLUTE)
+  /FIXED=dx | SSTYPE(3)
+  /METHOD=REML
+  /PRINT=SOLUTION.
+
+* Read original file in file in again.
+    
+PRESERVE.
+SET DECIMAL DOT.
+GET DATA  /TYPE=TXT
+  /FILE=    "*choose from own directory* "
+  /ENCODING='UTF8'
+  /DELIMITERS=","
+  /QUALIFIER='"'
+  /ARRANGEMENT=DELIMITED
+  /FIRSTCASE=2
+  /DATATYPEMIN PERCENTAGE=95.0
+  /VARIABLES=
+  famnr AUTO
+  ppn AUTO
+  x AUTO
+  y AUTO
+  dx AUTO
+  dy AUTO
+  xm AUTO
+  zyg AUTO
+  /MAP.
+RESTORE.
+CACHE.
+EXECUTE.
+
+* CLR dy ~x. For full documentation provided by IBS see: https://www.ibm.com/support/pages/conditional-logistic-regression-using-coxreg
+* SPSS does not automatically select the dy discordant twins - so select twins first.
+
+* Identify Duplicate Cases.
+SORT CASES BY famnr(A) dy(A).
+MATCH FILES
+  /FILE=*
+  /BY famnr dy
+  /FIRST=PrimaryFirst
+  /LAST=PrimaryLast.
+DO IF (PrimaryFirst).
+COMPUTE  MatchSequence=1-PrimaryLast.
+ELSE.
+COMPUTE  MatchSequence=MatchSequence+1.
+END IF.
+LEAVE  MatchSequence.
+FORMATS  MatchSequence (f7).
+MATCH FILES
+  /FILE=*
+  /DROP=PrimaryFirst PrimaryLast.
+VARIABLE LABELS  MatchSequence 'Sequential count of matching cases'.
+VARIABLE LEVEL  MatchSequence (SCALE).
+FREQUENCIES VARIABLES=MatchSequence.
+EXECUTE.
+
+*select discordant dy twins.
+Select if MatchSequence = 0.
+EXECUTE.
+
+*recode the dependent variable so that it has a value of 1 for the cases and 2 for the controls.
+RECODE dy (1=1) (0=2).
+EXECUTE.
+
+* Create a copy of this variable with another name. We'll call this variable STATUS. (Technically, all that's needed here is for all cases to share some property not shared by the controls.).
+RECODE dy (ELSE=Copy) INTO copy_dy.
+EXECUTE.
+
+* CLR dy ~x.
+COXREG dy
+  /STATUS=copy_dy(1)
+  /STRATA=famnr
+  /METHOD=ENTER x 
+  /PRINT=CI(95) CORR
+  /CRITERIA=PIN(.05) POUT(.10) ITERATE(20).
+
+* CLR dy~dx
+ * Note: SPSS does handle the discordant dx (exposure) variable correctly, so here we do not need to select those manually, only for the outcome variable dy.
+
+COXREG dy
+  /STATUS=copy_dy(1)
+  /STRATA=famnr
+  /CONTRAST (dx)=Indicator(1)
+  /METHOD=ENTER dx 
+  /PRINT=CI(95) CORR
+  /CRITERIA=PIN(.05) POUT(.10) ITERATE(20).
+
+***** Repeat above for the other scenario’s ******
