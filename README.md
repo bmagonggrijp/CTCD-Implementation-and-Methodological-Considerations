@@ -1,7 +1,7 @@
 # CTCD-Implementation-and-Methodological-Considerations
 Data simulation CTCD in R, simulated data analyses in R, STATA and SPSS.
 
-These scripts are part of the supplementary material of the paper The Co-Twin-Control_design: Implementation and Methodological Considerations, doi: .......
+These scripts are part of the supplementary material of the paper The Co-Twin-Control_design: Implementation and Methodological Considerations, doi:10.1017/thg.2023.35
 
 First, a data simulation was conducted using R to demonstrate the application of the Co-Twin-Control-Design (CTCD) for assessing causality and confounding. Three datasets were generated: one for a population sample, one for a dizygotic (DZ) twin sample, and one for a monozygotic (MZ) twin sample, where the desired samples can be specified by the user. 
 
