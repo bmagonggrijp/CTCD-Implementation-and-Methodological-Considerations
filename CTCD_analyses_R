@@ -1,4 +1,4 @@
-#CTDT analyses – R code
+#cTDT analyses – R code
 
 #Needed packages
 library(plm)
@@ -14,20 +14,20 @@ glm(dy ~ x, data = cdatun_A, family = binomial)
 glm(dy ~ dx, data = cdatun_A, family = binomial)
 
 # Scenario A –  DZ twins
-Cdatlongdz_A <- data.frame(cdatlongdz_A, index = c("famnr"))
-plm(y ~ x, data = Cdatlongdz_A, model = "within")
-plm(y ~ dx, data = Cdatlongdz_A, model = "within")
-clogit(dy ~ x + strata(famnr), data = Cdatlongdz_A)
-clogit(dy ~ dx + strata(famnr), data = Cdatlongdz_A)
+cdatlongdz_A <- data.frame(cdatlongdz_A, index = c("famnr"))
+plm(y ~ x, data = cdatlongdz_A, model = "within")
+plm(y ~ dx, data = cdatlongdz_A, model = "within")
+clogit(dy ~ x + strata(famnr), data = cdatlongdz_A)
+clogit(dy ~ dx + strata(famnr), data = cdatlongdz_A)
 
 # Scenario A –  MZ twins
-CdatlongMZ_A <- data.frame(cdatlongmz_A, index = c("famnr"))
+cdatlongmz_A <- data.frame(cdatlongmz_A, index = c("famnr"))
 #Fixed effects analyses
-plm(y ~ x, data = CdatlongMZ_A, model = "within")
-plm(y ~ dx, data = CdatlongMZ_A, model = "within")
-# Conditional Logistic regression
-clogit(dy ~ x + strata(famnr), data = Cdatlongmz_A)
-clogit(dy ~ dx + strata(famnr), data = Cdatlongmz_A)
+plm(y ~ x, data = cdatlongmz_A, model = "within")
+plm(y ~ dx, data = cdatlongmz_A, model = "within")
+# conditional Logistic regression
+clogit(dy ~ x + strata(famnr), data = cdatlongmz_A)
+clogit(dy ~ dx + strata(famnr), data = cdatlongmz_A)
 
 # Scenario B - Unrelated
 # Linear regression
@@ -38,48 +38,48 @@ glm(dy ~ x, data = cdatun_B, family = binomial)
 glm(dy ~ dx, data = cdatun_B, family = binomial)
 
 # Scenario B - DZ twins
-Cdatlongdz_B <- data.frame(cdatlongdz_B, index = c("famnr"))
+cdatlongdz_B <- data.frame(cdatlongdz_B, index = c("famnr"))
 # Fixed effects
-plm(y ~ x, data = Cdatlongdz_B, model = "within")
-plm(y ~ dx, data = Cdatlongdz_B, model = "within")
-# CLR
-clogit(dy ~ x + strata(famnr), data = Cdatlongdz_B)
-clogit(dy ~ dx + strata(famnr), data = Cdatlongdz_B)
+plm(y ~ x, data = cdatlongdz_B, model = "within")
+plm(y ~ dx, data = cdatlongdz_B, model = "within")
+# cLR
+clogit(dy ~ x + strata(famnr), data = cdatlongdz_B)
+clogit(dy ~ dx + strata(famnr), data = cdatlongdz_B)
 
 # Scenario B - MZ twins
-CdatlongMZ_B <- data.frame(cdatlongmz_B, index = c("famnr"))
+cdatlongmz_B <- data.frame(cdatlongmz_B, index = c("famnr"))
 #Fixed effects
-plm(y ~ x, data = CdatlongMZ_B, model = "within")
-plm(y ~ dx, data = CdatlongMZ_B, model = "within")
-#CLR
-clogit(dy ~ x + strata(famnr), data = Cdatlongmz_B)
-clogit(dy ~ dx + strata(famnr), data = Cdatlongmz_B)
+plm(y ~ x, data = cdatlongmz_B, model = "within")
+plm(y ~ dx, data = cdatlongmz_B, model = "within")
+#cLR
+clogit(dy ~ x + strata(famnr), data = cdatlongmz_B)
+clogit(dy ~ dx + strata(famnr), data = cdatlongmz_B)
 
-# Scenario C - Unrelated
+# Scenario c - Unrelated
 # Linear regression
-lm(y ~ x, data = cdatun_C)
-lm(y ~ dx, data = cdatun_C)
+lm(y ~ x, data = cdatun_c)
+lm(y ~ dx, data = cdatun_c)
 # Logistic regression
-glm(dy ~ x, data = cdatun_C, family = binomial)
-glm(dy ~ dx, data = cdatun_C, family = binomial)
+glm(dy ~ x, data = cdatun_c, family = binomial)
+glm(dy ~ dx, data = cdatun_c, family = binomial)
 
-# Scenario C - DZ twins
-Cdatlongdz_C <- data.frame(cdatlongdz_C, index = c("famnr"))
+# Scenario c - DZ twins
+cdatlongdz_c <- data.frame(cdatlongdz_c, index = c("famnr"))
 #Fixed effects
-plm(y ~ x, data = Cdatlongdz_C, model = "within")
-plm(y ~ dx, data = Cdatlongdz_C, model = "within")
-# CLR
-clogit(dy ~ x + strata(famnr), data = Cdatlongdz_C)
-clogit(dy ~ dx + strata(famnr), data = Cdatlongdz_C)
+plm(y ~ x, data = cdatlongdz_c, model = "within")
+plm(y ~ dx, data = cdatlongdz_c, model = "within")
+# cLR
+clogit(dy ~ x + strata(famnr), data = cdatlongdz_c)
+clogit(dy ~ dx + strata(famnr), data = cdatlongdz_c)
 
-# Scenario C - MZ twins
-CdatlongMZ_C <- data.frame(cdatlongmz_C, index = c("famnr"))
+# Scenario c - MZ twins
+cdatlongmz_c <- data.frame(cdatlongmz_c, index = c("famnr"))
 #Fixed effects
-plm(y ~ x, data = CdatlongMZ_C, model = "within")
-plm(y ~ dx, data = CdatlongMZ_C, model = "within")
-# CLR
-clogit(dy ~ x + strata(famnr), data = Cdatlongmz_C)
-clogit(dy ~ dx + strata(famnr), data = Cdatlongmz_C)
+plm(y ~ x, data = cdatlongmz_c, model = "within")
+plm(y ~ dx, data = cdatlongmz_c, model = "within")
+# cLR
+clogit(dy ~ x + strata(famnr), data = cdatlongmz_c)
+clogit(dy ~ dx + strata(famnr), data = cdatlongmz_c)
 
 # Scenario D - Unrelated
 # Linear regression
@@ -90,19 +90,19 @@ glm(dy ~ x, data = cdatun_D, family = binomial)
 glm(dy ~ dx, data = cdatun_D, family = binomial)
 
 # Scenario D - DZ twins
-Cdatlongdz_D <- data.frame(cdatlongdz_D, index = c("famnr"))
+cdatlongdz_D <- data.frame(cdatlongdz_D, index = c("famnr"))
 # Fixed Effects
-plm(y ~ x, data = Cdatlongdz_D, model = "within")
-plm(y ~ dx, data = Cdatlongdz_D, model = "within")
-# CLR
-clogit(dy ~ x + strata(famnr), data = Cdatlongdz_D)
-clogit(dy ~ dx + strata(famnr), data = Cdatlongdz_D)
+plm(y ~ x, data = cdatlongdz_D, model = "within")
+plm(y ~ dx, data = cdatlongdz_D, model = "within")
+# cLR
+clogit(dy ~ x + strata(famnr), data = cdatlongdz_D)
+clogit(dy ~ dx + strata(famnr), data = cdatlongdz_D)
 
 # Scenario D - MZ twins
-CdatlongMZ_D <- data.frame(cdatlongmz_D, index = c("famnr"))
+cdatlongmz_D <- data.frame(cdatlongmz_D, index = c("famnr"))
 # Fixed effects
-plm(y ~ x, data = CdatlongMZ_D, model = "within")
-plm(y ~ dx, data = CdatlongMZ_D, model = "within")
-# CLR
-clogit(dy ~ x + strata(famnr), data = Cdatlongmz_D)
-clogit(dy ~ dx + strata(famnr), data = Cdatlongmz_D) 
+plm(y ~ x, data = cdatlongmz_D, model = "within")
+plm(y ~ dx, data = cdatlongmz_D, model = "within")
+# cLR
+clogit(dy ~ x + strata(famnr), data = cdatlongmz_D)
+clogit(dy ~ dx + strata(famnr), data = cdatlongmz_D) 
