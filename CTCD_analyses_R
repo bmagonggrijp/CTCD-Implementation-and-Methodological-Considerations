@@ -57,11 +57,11 @@ clogit(dy ~ dx + strata(famnr), data = cdatlongmz_B)
 
 # Scenario c - Unrelated
 # Linear regression
-lm(y ~ x, data = cdatun_c)
-lm(y ~ dx, data = cdatun_c)
+lm(y ~ x, data = cdatun_C)
+lm(y ~ dx, data = cdatun_C)
 # Logistic regression
-glm(dy ~ x, data = cdatun_c, family = binomial)
-glm(dy ~ dx, data = cdatun_c, family = binomial)
+glm(dy ~ x, data = cdatun_C, family = binomial)
+glm(dy ~ dx, data = cdatun_C, family = binomial)
 
 # Scenario c - DZ twins
 cdatlongdz_c <- data.frame(cdatlongdz_c, index = c("famnr"))
